@@ -64,7 +64,7 @@ class PaymentViewSet(viewsets.ViewSet):
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         transaction_type = 'CustomerPayBillOnline'
         account_reference = 'Hezekiah'
-        callback_url = 'https://sirkellyfoundation.org/callback.php'
+        callback_url = 'https://daraja-mpesa-ecosystem-django.onrender.com/api/mpesa/callback/'
         transaction_desc = 'Test Payment'
         password = base64.b64encode((business_short_code + passkey + timestamp).encode()).decode()
 
