@@ -125,12 +125,17 @@ def mpesa_callback(request):
         print("Canceled")
         # Transaction failed
         return JsonResponse({'status': 'Failed', 'message': result_description})
-
+import subprocess
 def log_callback_data(callback_data):
     log_file_path = os.path.join(settings.BASE_DIR, 'mpesa_callback_logs.txt')
     try:
         with open(log_file_path, 'a') as log_file:
             log_file.write(f"Callback Data: {callback_data}\n")
         print(f"Callback data successfully logged to {log_file_path}")
+
+        # Add file, commit, and push to GitHub (ensure that git is installed on the server)
+        subprocess.run(['git', 'add', log_file_path])
+        subprocess.run(['git', 'commit', '-m', 'Updated callback logs'])
+        subprocess.run(['git', 'push', 'origin', 'main'])  # Adjust branch if needed
     except Exception as e:
         print(f"Failed to write log: {e}")
