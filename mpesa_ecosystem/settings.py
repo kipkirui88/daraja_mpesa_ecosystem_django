@@ -38,8 +38,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_spectacular',
     'mpesa_app'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# SPECTACULAR_SETTINGS = {
+#     'TITLE': 'Mpesa API',
+#     'DESCRIPTION': 'This API allows for M-Pesa STK Push integration.',
+#     'VERSION': '1.0.0',
+#     'SERVE_INCLUDE_SCHEMA': False,
+# }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -75,23 +87,23 @@ WSGI_APPLICATION = 'mpesa_ecosystem.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mpesa_db_y019',        # Replace with your database name
-        'USER': 'mpesa_db_y019_user',        # Replace with your PostgreSQL user
-        'PASSWORD': 'igBrkOvVy3c1sY73zsErgGw7LQ2ahzlu',   # Replace with your PostgreSQL user's password
-        'HOST': 'dpg-cs222lo8fa8c73d73ss0-a',           # Or your database server's address
-        'PORT': '5432',                # Default PostgreSQL port
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'mpesa_db_y019',        # Replace with your database name
+#         'USER': 'mpesa_db_y019_user',        # Replace with your PostgreSQL user
+#         'PASSWORD': 'igBrkOvVy3c1sY73zsErgGw7LQ2ahzlu',   # Replace with your PostgreSQL user's password
+#         'HOST': 'dpg-cs222lo8fa8c73d73ss0-a',           # Or your database server's address
+#         'PORT': '5432',                # Default PostgreSQL port
+#     }
+# }
 
 
 

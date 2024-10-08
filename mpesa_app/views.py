@@ -27,11 +27,16 @@ def normalize_phone_number(phone_number):
 
     return phone_number
 
-
+from drf_spectacular.utils import extend_schema
 class PaymentViewSet(viewsets.ViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
 
+    @extend_schema(
+        summary="Initiate M-Pesa Payment",
+        description="Initiates an M-Pesa payment by calling the Safaricom API",
+        responses={200: PaymentSerializer}
+    )
     def create(self, request):
         phone_number = request.data.get('phone_number')
         amount = request.data.get('amount')
@@ -39,11 +44,7 @@ class PaymentViewSet(viewsets.ViewSet):
         response = self.perform_stk_push(phone_number, amount)
         data = response.json()
 
-        # Save the transaction details to the database
-        payment = Payment(
-            phone_number=phone_number,
-            amount=amount,
-        )
+        payment = Payment(phone_number=phone_number, amount=amount)
         payment.save()
 
         return Response(data)
@@ -90,41 +91,47 @@ class PaymentViewSet(viewsets.ViewSet):
 
 @api_view(['POST'])
 def mpesa_callback(request):
-    print(f"Callback Data: {request.data}")  # Ensure you're getting the data
-    # Safaricom sends the callback data as JSON, we can access it via request.data
+    print(f"Callback Data: {request.data}")
     callback_data = request.data
     
-    # Log the callback data into a text file
+    # Log the callback data
     log_callback_data(callback_data)
     
-    # Extract the necessary details from the callback data
+    # Extract necessary details
     result_code = callback_data['Body']['stkCallback']['ResultCode']
     result_description = callback_data['Body']['stkCallback']['ResultDesc']
     merchant_request_id = callback_data['Body']['stkCallback']['MerchantRequestID']
     checkout_request_id = callback_data['Body']['stkCallback']['CheckoutRequestID']
     
-    # Check if the transaction was successful
+    # Check if the transaction was successful (ResultCode 0 means success)
     if result_code == 0:
-
-        print("Success payment")
-        # Transaction was successful
+        print("Successful payment")
         amount = callback_data['Body']['stkCallback']['CallbackMetadata']['Item'][0]['Value']
         phone_number = callback_data['Body']['stkCallback']['CallbackMetadata']['Item'][4]['Value']
         
-        # Update the payment record in the database
+        # Find and update the payment record
         payment = Payment.objects.filter(phone_number=phone_number, amount=amount).first()
         if payment:
-            payment.status = 'Completed'  # Assuming you have a 'status' field
+            payment.result_code = result_code
+            payment.result_description = result_description
+            payment.status = 'Completed'
             payment.save()
-        print("success payment")
         
         return JsonResponse({'status': 'Success', 'message': 'Payment processed successfully'})
-        
     
     else:
-        print("Canceled")
-        # Transaction failed
+        # For failed transactions, update with result_code and result_description
+        print("Payment failed or cancelled")
+        # You might want to search by CheckoutRequestID or another identifier
+        payment = Payment.objects.filter(phone_number=callback_data['Body']['stkCallback']['CallbackMetadata']['Item'][4]['Value']).first()
+        if payment:
+            payment.result_code = result_code
+            payment.result_description = result_description
+            payment.status = 'Failed'  # Mark as failed
+            payment.save()
+        
         return JsonResponse({'status': 'Failed', 'message': result_description})
+
 # import subprocess
 def log_callback_data(callback_data):
     log_file_path = os.path.join(settings.BASE_DIR, 'mpesa_callback_logs.txt')
@@ -132,10 +139,5 @@ def log_callback_data(callback_data):
         with open(log_file_path, 'a') as log_file:
             log_file.write(f"Callback Data: {callback_data}\n")
         print(f"Callback data successfully logged to {log_file_path}")
-
-        # # Add file, commit, and push to GitHub (ensure that git is installed on the server)
-        # subprocess.run(['git', 'add', log_file_path])
-        # subprocess.run(['git', 'commit', '-m', 'Updated callback logs'])
-        # subprocess.run(['git', 'push', 'origin', 'main'])  # Adjust branch if needed
     except Exception as e:
         print(f"Failed to write log: {e}")
