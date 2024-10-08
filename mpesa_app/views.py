@@ -91,43 +91,40 @@ class PaymentViewSet(viewsets.ViewSet):
 
 @api_view(['POST'])
 def mpesa_callback(request):
-    print(f"Callback Data: {request.data}")
+    print(f"Callback Data: {request.data}")  # Ensure you're getting the data
     callback_data = request.data
     
-    # Log the callback data
+    # Log the callback data into a text file
     log_callback_data(callback_data)
     
-    # Extract necessary details
+    # Extract the necessary details from the callback data
     result_code = callback_data['Body']['stkCallback']['ResultCode']
     result_description = callback_data['Body']['stkCallback']['ResultDesc']
     merchant_request_id = callback_data['Body']['stkCallback']['MerchantRequestID']
     checkout_request_id = callback_data['Body']['stkCallback']['CheckoutRequestID']
     
-    # Check if the transaction was successful (ResultCode 0 means success)
+    # Check if the transaction was successful
     if result_code == 0:
-        print("Successful payment")
+        # Transaction was successful
         amount = callback_data['Body']['stkCallback']['CallbackMetadata']['Item'][0]['Value']
         phone_number = callback_data['Body']['stkCallback']['CallbackMetadata']['Item'][4]['Value']
         
-        # Find and update the payment record
+        # Update the payment record in the database
         payment = Payment.objects.filter(phone_number=phone_number, amount=amount).first()
         if payment:
-            payment.result_code = result_code
-            payment.result_description = result_description
-            payment.status = 'Completed'
+            payment.status = 'Completed'  # Update the status field
+            payment.result_code = result_code  # Update result code
+            payment.result_description = result_description  # Update result description
             payment.save()
         
         return JsonResponse({'status': 'Success', 'message': 'Payment processed successfully'})
-    
     else:
-        # For failed transactions, update with result_code and result_description
-        print("Payment failed or cancelled")
-        # You might want to search by CheckoutRequestID or another identifier
-        payment = Payment.objects.filter(phone_number=callback_data['Body']['stkCallback']['CallbackMetadata']['Item'][4]['Value']).first()
+        # Transaction failed
+        payment = Payment.objects.filter(phone_number=phone_number, amount=amount).first()
         if payment:
-            payment.result_code = result_code
-            payment.result_description = result_description
-            payment.status = 'Failed'  # Mark as failed
+            payment.status = 'Failed'  # Update the status field
+            payment.result_code = result_code  # Update result code
+            payment.result_description = result_description  # Update result description
             payment.save()
         
         return JsonResponse({'status': 'Failed', 'message': result_description})
