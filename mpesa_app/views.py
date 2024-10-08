@@ -141,3 +141,10 @@ def log_callback_data(callback_data):
         print(f"Callback data successfully logged to {log_file_path}")
     except Exception as e:
         print(f"Failed to write log: {e}")
+    
+def transaction_list(request):
+    # Query all payments from the database
+    payments = Payment.objects.all()
+    
+    # Pass the payment data to the template
+    return render(request, 'transactions.html', {'payments': payments})

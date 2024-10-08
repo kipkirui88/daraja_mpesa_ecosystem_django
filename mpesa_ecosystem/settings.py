@@ -87,23 +87,23 @@ WSGI_APPLICATION = 'mpesa_ecosystem.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'mpesa_db_y019',        # Replace with your database name
-#         'USER': 'mpesa_db_y019_user',        # Replace with your PostgreSQL user
-#         'PASSWORD': 'igBrkOvVy3c1sY73zsErgGw7LQ2ahzlu',   # Replace with your PostgreSQL user's password
-#         'HOST': 'dpg-cs222lo8fa8c73d73ss0-a',           # Or your database server's address
-#         'PORT': '5432',                # Default PostgreSQL port
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mpesa_db_y019',        # Replace with your database name
+        'USER': 'mpesa_db_y019_user',        # Replace with your PostgreSQL user
+        'PASSWORD': 'igBrkOvVy3c1sY73zsErgGw7LQ2ahzlu',   # Replace with your PostgreSQL user's password
+        'HOST': 'dpg-cs222lo8fa8c73d73ss0-a',           # Or your database server's address
+        'PORT': '5432',                # Default PostgreSQL port
+    }
+}
 
 
 

@@ -1,0 +1,23 @@
+<!-- templates/transactions.html -->
+<table>
+    <thead>
+        <tr>
+            <th>Phone Number</th>
+            <th>Amount</th>
+            <th>Result Code</th>
+            <th>Result Description</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in payments %}
+        <tr>
+            <td>{{ payment.phone_number }}</td>
+            <td>{{ payment.amount }}</td>
+            <td>{{ payment.result_code }}</td>
+            <td>{{ payment.result_description }}</td>
+            <td>{{ payment.status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
