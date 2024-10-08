@@ -9,21 +9,21 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv # type: ignore
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*o=tz@z*x112w*(6@d3zh(ha9^#pdp_6r9hc#juhoi64&z%f$t'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['daraja-mpesa-ecosystem-django.onrender.com', '127.0.0.1']
 
@@ -94,14 +94,16 @@ WSGI_APPLICATION = 'mpesa_ecosystem.wsgi.application'
 #     }
 # }
 
+
+# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mpesa_db_y019',        # Replace with your database name
-        'USER': 'mpesa_db_y019_user',        # Replace with your PostgreSQL user
-        'PASSWORD': 'igBrkOvVy3c1sY73zsErgGw7LQ2ahzlu',   # Replace with your PostgreSQL user's password
-        'HOST': 'dpg-cs222lo8fa8c73d73ss0-a',           # Or your database server's address
-        'PORT': '5432',                # Default PostgreSQL port
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 

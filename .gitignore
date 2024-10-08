@@ -1,3 +1,7 @@
 /venv
+
 db.sqlite3
 txt.txt
+
+pay.py
+.env
